@@ -43,6 +43,14 @@ getClosestPackage = function(carLocation, packages) {
   return (nearestPackage)
 }
 
+#'
+#'
+#'
+#'
+aStarFindPackage = function(carLocation, packages, hroads, vroads) {
+  
+}
+
 #' aStarSearch
 #'
 #' Performing an A* search algorithm
@@ -193,14 +201,14 @@ aStarDM = function(roads, car, packages) {
   carLocation = c(car$x, car$y)
   if (car$load == 0) {
     closestPackage = getClosestPackage(carLocation, packages)
-    goTo = c(closestPackage[1], closestPackage[2])
+    #closestPackage = aStarFindPackage(carLocation, packages, roads$hroads, roads$vroads)
+    packageLocation = c(closestPackage[1], closestPackage[2])
   } else {
     row = car$load
     packageLocation = c(packages[row,3], packages[row,4])
-    goTo = packageLocation
   }
   
-  goTo = aStarSearch(roads$hroads, roads$vroads, goTo, carLocation)
+  goTo = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
   
   if (car$x < goTo[1]) {nextMove=6}
   else if (car$x > goTo[1]) {nextMove=4}
