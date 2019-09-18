@@ -1,0 +1,13 @@
+Package: DeliveryMan
+Type: Package
+Title: Delivery Man
+Version: 1.1.0
+Author: Mike Ashcroft
+Maintainer: The package maintainer <michael.ashcroft@it.uu.se>
+Description: Code for the Delivery Man project in the Uppsala University AI course.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 6.0.1
+NeedsCompilation: no
+Packaged: 2018-09-06 15:00:44 UTC; Mike
