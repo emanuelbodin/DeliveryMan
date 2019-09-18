@@ -58,34 +58,30 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
   startNode <- list(x=carLocation[1], y=carLocation[2], g=0, h=h, f=h, parent=c(0,0))
   openSet[[length(openSet) + 1]] <- startNode
 
-  
+  # when the finalNode is found, execution will be finished
   finalNode = NULL
-  i = 0
-  #while(is.null(finalNode)) {
-  #for (i in 1:3) {
   while(1) {
-  #print(paste0('1st openset :', openSet))
+    # find the node with the lowest f cost in the open set
     scores=sapply(openSet,function(item)item$f)
     best_index = which.min(scores)
     currentNode = openSet[[best_index]]
+    
+    # move node from open set to closed set
     openSet = openSet[-best_index]
     closedSet[[length(closedSet) + 1]] <- currentNode
-    #print(paste0("iteration: ", i))
-    #print(paste0("openset: ",openSet))
-    #print(paste0("closedset: ", closedSet))
     
+    # Calculate h for the current node
     currentNodePosition = c(currentNode$x, currentNode$y)
-    #print(paste0('Current node position: ', currentNodePosition))
     h = getManhattanDistance(currentNodePosition, packageLocation)
-    #print(paste0('h value: ', h))
+
+    # if h = 0, we have found the goal node
     if (h == 0) {
-      #print(paste0('goal node: ', currentNode))
       finalNode = currentNode
       nextMove = trackOrigin(finalNode, closedSet)
       return (nextMove)
     }
     
-    # Expand neighbours
+    # Expand current node in all directions
     x = currentNode$x
     y = currentNode$y
     node1 = c(x + 1, y)
@@ -93,35 +89,37 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
     node3 = c(x, y + 1)
     node4 = c(x, y - 1)
     nodes <- list(node1, node2, node3, node4)
-    #print(paste0('current node: ', currentNode))
-    #print(paste0("list: ", nodes))
+    
+    # loop through the neighbours to see if they meet our requirements
     for(j in 1:length(nodes)) {
-      #print(paste0('expand node ?: ', nodes[[j]]))
-      #print(paste0('open set: ', openSet))
-      #print(paste0('closed set: ', closedSet))
-      # if node is inside board and not already in closed or open set -> expand
+      # if node is inside board and not already in closed or open set -> we should expand and add the node to the open set
       if (isInsideBoard(nodes[[j]]) & !isInSet(nodes[[j]], closedSet) & !isInSet(nodes[[j]], openSet)) {
         x = nodes[[j]][1]
         y = nodes[[j]][2]
         h = getManhattanDistance(c(x,y), carLocation)
+        
+        # expanding to the right
         if (j == 1) {
           g = hroads[x-1, y]
         }
+        # expanding to the left
         else if (j == 2) {
           g = hroads[x, y]
         }
+        # expanding upwards
         else if (j == 3) {
           g = vroads[x, y-1]
         }
+        # expanding downwards
         else if (j == 4) {
           g = vroads[x, y]
         }
+        # create new node and add it to the open set
         parent = c(currentNode$x, currentNode$y)
         newNode <- list(x=x, y=y, g=g, h=h, f=h+g, parent=parent)
         openSet[[length(openSet) + 1]] <- newNode
       }
     }
-    i = i + 1
   }
 }
 
