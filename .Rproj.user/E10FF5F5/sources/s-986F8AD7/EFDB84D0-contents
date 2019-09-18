@@ -4,17 +4,23 @@
 
 # runDeliveryMan(carReady = aStarDM, dim = 10, turns = 2000, doPlot = T, pause = 0.1, del = 5, verbose = T)
 
-# getManhattanDistance
-#
-#
-getManhattanDistance = function(carLocation, pickupSpot) {
-  distance = abs(carLocation[1] - pickupSpot[1]) + abs(carLocation[2] - pickupSpot[2])
+#' getManhattanDistance
+#' 
+#' Will return the manhattan distance between two positions
+#' @param pos1 array woth x and y value
+#' @param pos2 array with x and y value
+#' @return the manhattan distance
+getManhattanDistance = function(pos1, pos2) {
+  distance = abs(pos1[1] - pos2[1]) + abs(pos1[2] - pos2[2])
   return (distance)
 }
 
-# findClosestPackage
-#
-#
+#' findClosestPackage
+#'
+#' Finds the closests package in respect to the current position of the car
+#' @param carLocation array with x and y value
+#' @param packages matrix with package data
+#' @return array with data for the closest package
 getClosestPackage = function(carLocation, packages) {
   unpickedNo = which(packages[,5] == 0)
   if (length(unpickedNo) == 1) {
@@ -36,87 +42,15 @@ getClosestPackage = function(carLocation, packages) {
   }
   return (nearestPackage)
 }
-# 
-# # get Frontier
-# #
-# #
-# getFrontier = function(hroads, vroads, packageLocation, carLocation) {
-#   heuristicValue = getManhattanDistance(carLocation, packageLocation)
-#   frontier = list()
-#   startNode <- list(x=carLocation$x, y=carLocation$y, g=0, h=heuristicValue, f=heuristicValue, path=c(0,0))
-#   frontier <- list(frontier, startNode)
-#   frontier <- list(frontier,getNeighbours(hroads, vroads, frontier[[2]], packageLocation))
-# }
-# 
-# # get Neighbours
-# #
-# #
-# getNeighbours = function(hroads, vroads, node, packageLocation) {
-#   #expand node
-#   newNode = NULL
-#   nodeList <- list()
-#   newLocations <- list(
-#     node$start + c(1,0),
-#     node$start + c(-1,0),
-#     node$start + c(0,1),
-#     node$start + c(0,-1)
-#   )
-#   for (i in 1:4) {
-#     #print(newLocations[[i]])
-#     #print(length(node$path))
-#     if (isInsideBoard(newLocations[[i]])) {
-#       
-#         if (!all(newLocations[[i]], node$path)) {
-#           break
-#       }
-#       
-#         if (i == 1) {
-#           gCost = hroads[node$start[1]+1,node$start[2]]
-#         }
-#         else if (i == 2) {
-#           gCost = hroads[node$start[1]-1,node$start[2]]
-#         }
-#         else if (i == 3) {
-#           gCost = vroads[node$start[1],node$start[2]+1]
-#         }
-#         else if (i == 4) {
-#           gCost = vroads[node$start[1],node$start[2]-1]
-#         }
-#         heuristicValue = getManhattanDistance(newLocations[[i]], packageLocation)
-#         newNode <- list(start=newLocations[[i]], cost=node$cost+gCost, path=node$start))
-#         print(newNode)
-#         nodeList <- list(nodeList, newNode)
-#       }
-#     }
-#   return (nodeList)
-# }
 
-#
-#
-#
-elementExist = function(vector, theList) {
-  for (i in 1:length(theList)) {
-    if (all(theList[[i]] == vector)) {
-      return (1)
-    }
-  }
-  return (0)
-}
-
-#
-#
-#
-isInsideBoard = function(vector) {
-  if (vector[1] < 11 & vector[1] > 0 & vector[2] < 11 & vector[2] > 0) {
-    return (1)
-  } else {
-    return (0)
-  }
-}
-
-#
-#
-#
+#' aStarSearch
+#'
+#' Performing an A* search algorithm
+#' @param hroads matrix containing traffic conditions on horizontal roads
+#' @param vroads matrix containing traffic conditions on vertical roads
+#' @param packageLocation array with x and y value for the package location
+#' @param carLocation array with x and y value for the car location
+#' @return next move, array with x and y value
 aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
   openSet <- list()
   closedSet <- list()
@@ -191,9 +125,25 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
   }
 }
 
-#
-#
-#
+#' isInsideBoard
+#'
+#' Checks if node lies inside the board or not
+#' @param nodePos position of node, array with x and y
+#' @return true or false
+isInsideBoard = function(nodePos) {
+  if (nodePos[1] < 11 & nodePos[1] > 0 & nodePos[2] < 11 & nodePos[2] > 0) {
+    return (1)
+  } else {
+    return (0)
+  }
+}
+
+#' trackOrigin
+#'
+#' Tracks thr origin of a node, the node we want to move to, which is the second oldest parent node
+#' @param node, list containing node data
+#' @param set, list of nodes (can for example be the open set or the closed set)
+#' @return the node we want the move to
 trackOrigin = function(node, set) {
   parent = node$parent
   child1 = node # where we want to go
@@ -215,12 +165,13 @@ trackOrigin = function(node, set) {
   return (child1)
 }
 
-#
-#
-#
+#' isInSet
+#'
+#' Checks if the node exists in a certain set of nodes
+#' @param node, node list we want to search for
+#' @param set, list of nodes (can for exmaple be or open or closed set)
+#' @return true or false
 isInSet = function(node, set) {
-  #print(paste0('node:', node))
-  #print(paste0('set:', set))
   if (length(set) == 0) {
     return (0)
   }
@@ -233,21 +184,13 @@ isInSet = function(node, set) {
   return (0)
 }
 
-#
-#
-#
-getNeighbours = function(currentNode) {
-  x = currentNode$x
-  y = currentNode$y
-  node1 = c(x + 1, y)
-  node2 = c(x - 1, y)
-  node3 = c(x, y + 1)
-  node4 = c(x, y - 1)
-}
-
-# A* DM
-#
-#
+#' aStarDM
+#'
+#' DeliveryMan car using A*
+#' @param roads
+#' @param car
+#' @param packages
+#' @return
 aStarDM = function(roads, car, packages) {
   carLocation = c(car$x, car$y)
   if (car$load == 0) {
@@ -256,15 +199,10 @@ aStarDM = function(roads, car, packages) {
   } else {
     row = car$load
     packageLocation = c(packages[row,3], packages[row,4])
-    #goTo = getAction(frontier)
     goTo = packageLocation
   }
   
-  goToPos = aStarSearch(roads$hroads, roads$vroads, goTo, carLocation)
-  #print(paste0('Next move: ', goToPos))
-  goTo = goToPos
-  #frontier = getFrontier(roads$hroads, roads$vroads, goTo, carLocation)
-  
+  goTo = aStarSearch(roads$hroads, roads$vroads, goTo, carLocation)
   
   if (car$x < goTo[1]) {nextMove=6}
   else if (car$x > goTo[1]) {nextMove=4}

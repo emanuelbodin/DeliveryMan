@@ -4,16 +4,16 @@
     "created" : 1568288622890.000,
     "dirty" : false,
     "encoding" : "UTF-8",
-    "folds" : "",
+    "folds" : "12|45|15|0|\n23|53|43|0|\n53|70|125|0|\n146|35|165|0|\n173|31|184|0|\n",
     "hash" : "0",
     "id" : "EFDB84D0",
-    "lastKnownWriteTime" : 1568798155,
-    "last_content_update" : 1568798155572,
+    "lastKnownWriteTime" : 1568805429,
+    "last_content_update" : 1568805429231,
     "path" : "~/ai_programming/DeliveryMan/R/DM.R",
     "project_path" : "R/DM.R",
     "properties" : {
-        "cursorPosition" : "0,0",
-        "scrollLine" : "0"
+        "cursorPosition" : "192,10",
+        "scrollLine" : "170"
     },
     "read_only" : false,
     "read_only_alternatives" : [
