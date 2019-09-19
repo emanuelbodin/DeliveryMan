@@ -190,7 +190,10 @@ getBestPackage = function(hroads, vroads, carLocation, packages) {
   unpickedNo = which(packages[,5] == 0)
   if (length(unpickedNo) == 1) {
     unpickedPackages = packages[unpickedNo,]
-    return (unpickedPackages)
+    packageLocation = c(unpickedPackages[1], unpickedPackages[2])
+    nodeData = aStarSearch(hroads, vroads,packageLocation, carLocation)
+    nextMove = nodeData$node
+    return (nextMove)
   } else {
     unpickedPackages = packages[unpickedNo,]
   }
@@ -202,11 +205,11 @@ getBestPackage = function(hroads, vroads, carLocation, packages) {
     nodeData = aStarSearch(hroads, vroads,packageLocation, carLocation)
     f = nodeData$finalF
     if (f < lowestF || is.null(lowestF)) {
-      bestPackage = nodeData$node
+      nextMove = nodeData$node
       lowestF = f
     }
   }
-  return (bestPackage)
+  return (nextMove)
 }
 
 #' aStarDM
@@ -219,15 +222,16 @@ getBestPackage = function(hroads, vroads, carLocation, packages) {
 aStarDM = function(roads, car, packages) {
   carLocation = c(car$x, car$y)
   if (car$load == 0) {
+    # closestPackage = getClosestPackage(carLocation, packages)
+    # packageLocation = c(closestPackage[1], closestPackage[2])
+    # h = getManhattanDistance(carLocation, packageLocation)
+    # if (h > 5) {
+      #closestPackage = getBestPackage(roads$hroads, roads$vroads, carLocation, packages)
     closestPackage = getClosestPackage(carLocation, packages)
-    packageLocation = c(closestPackage[1], closestPackage[2])
-    h = getManhattanDistance(carLocation, packageLocation)
-    nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
-    goTo = nodeData$node
-    # if (h < 6) {
-    #   closestPackage = getBestPackage(roads$hroads, roads$vroads, carLocation, packages)
-    #   packageLocation = c(closestPackage[1], closestPackage[2])
-    #   goTo = packageLocation
+      packageLocation = c(closestPackage[1], closestPackage[2])
+      nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
+      goTo = nodeData$node
+      #goTo = packageLocation
     # } else {
     #   nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
     #   goTo = nodeData$node
