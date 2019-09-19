@@ -43,14 +43,6 @@ getClosestPackage = function(carLocation, packages) {
   return (nearestPackage)
 }
 
-#'
-#'
-#'
-#'
-aStarFindPackage = function(carLocation, packages, hroads, vroads) {
-  
-}
-
 #' aStarSearch
 #'
 #' Performing an A* search algorithm
@@ -85,8 +77,10 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
     # if h = 0, we have found the goal node
     if (h == 0) {
       finalNode = currentNode
+      finalF = finalNode$f
       nextMove = trackOrigin(finalNode, closedSet)
-      return (nextMove)
+      nodeData <- list(node=nextMove,finalF=finalF)
+      return (nodeData)
     }
     
     # Expand current node in all directions
@@ -190,6 +184,31 @@ isInSet = function(node, set) {
   return (0)
 }
 
+#'
+#'
+getBestPackage = function(hroads, vroads, carLocation, packages) {
+  unpickedNo = which(packages[,5] == 0)
+  if (length(unpickedNo) == 1) {
+    unpickedPackages = packages[unpickedNo,]
+    return (unpickedPackages)
+  } else {
+    unpickedPackages = packages[unpickedNo,]
+  }
+  bestPackage = NULL
+  lowestF = NULL
+  for (i in 1:length(unpickedNo)) {
+    package = unpickedPackages[i,]
+    packageLocation = c(package[1], package[2])
+    nodeData = aStarSearch(hroads, vroads,packageLocation, carLocation)
+    f = nodeData$finalF
+    if (f < lowestF || is.null(lowestF)) {
+      bestPackage = nodeData$node
+      lowestF = f
+    }
+  }
+  return (bestPackage)
+}
+
 #' aStarDM
 #'
 #' DeliveryMan car using A*
@@ -201,14 +220,24 @@ aStarDM = function(roads, car, packages) {
   carLocation = c(car$x, car$y)
   if (car$load == 0) {
     closestPackage = getClosestPackage(carLocation, packages)
-    #closestPackage = aStarFindPackage(carLocation, packages, roads$hroads, roads$vroads)
     packageLocation = c(closestPackage[1], closestPackage[2])
+    h = getManhattanDistance(carLocation, packageLocation)
+    nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
+    goTo = nodeData$node
+    # if (h < 6) {
+    #   closestPackage = getBestPackage(roads$hroads, roads$vroads, carLocation, packages)
+    #   packageLocation = c(closestPackage[1], closestPackage[2])
+    #   goTo = packageLocation
+    # } else {
+    #   nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
+    #   goTo = nodeData$node
+    # }
   } else {
     row = car$load
     packageLocation = c(packages[row,3], packages[row,4])
+    nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
+    goTo = nodeData$node
   }
-  
-  goTo = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
   
   if (car$x < goTo[1]) {nextMove=6}
   else if (car$x > goTo[1]) {nextMove=4}
