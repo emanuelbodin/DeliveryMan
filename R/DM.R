@@ -57,7 +57,7 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
   h = getManhattanDistance(carLocation, packageLocation)
   startNode <- list(x=carLocation[1], y=carLocation[2], g=0, h=h, f=h, parent=c(0,0))
   openSet[[length(openSet) + 1]] <- startNode
-
+  
   # when the finalNode is found, execution will be finished
   finalNode = NULL
   while(1) {
@@ -73,7 +73,7 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
     # Calculate h for the current node
     currentNodePosition = c(currentNode$x, currentNode$y)
     h = getManhattanDistance(currentNodePosition, packageLocation)
-
+    
     # if h = 0, we have found the goal node
     if (h == 0) {
       finalNode = currentNode
@@ -95,7 +95,7 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
     # loop through the neighbours to see if they meet our requirements
     for(j in 1:length(nodes)) {
       # if node is inside board and not already in closed or open set -> we should expand and add the node to the open set
-      if (isInsideBoard(nodes[[j]]) & !isInSet(nodes[[j]], closedSet) & !isInSet(nodes[[j]], openSet)) {
+      if (isInsideBoard(nodes[[j]]) & !isInSet(nodes[[j]], closedSet)) {
         x = nodes[[j]][1]
         y = nodes[[j]][2]
         h = getManhattanDistance(c(x,y), carLocation)
@@ -116,10 +116,18 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
         else if (j == 4) {
           g = vroads[x, y]
         }
-        # create new node and add it to the open set
+        nodeIndex = isInSet(nodes[[j]], openSet)
         parent = c(currentNode$x, currentNode$y)
+        # create new node
         newNode <- list(x=x, y=y, g=g, h=h, f=h+g, parent=parent)
-        openSet[[length(openSet) + 1]] <- newNode
+        if (!nodeIndex) {
+          # add new node to open set if it doesnt already exist there
+          openSet[[length(openSet) + 1]] <- newNode
+        }
+          else if (openSet[[nodeIndex]]$f < newNode$f) {
+            # updates the node in the open set if the new f cost is lower than the old one
+            openSet[[nodeIndex]] <- newNode
+          }
       }
     }
   }
@@ -178,7 +186,7 @@ isInSet = function(node, set) {
   for (i in 1:length(set)) {
     #print(paste0('set vector: ', c(set[[i]]$x, set[[i]]$y)))
     if (all(node == c(set[[i]]$x, set[[i]]$y))) {
-      return (1)
+      return (i)
     }
   }
   return (0)
@@ -219,19 +227,19 @@ getBestPackage = function(hroads, vroads, carLocation, packages) {
 #' @param car
 #' @param packages
 #' @return
-aStarDM = function(roads, car, packages) {
+myFunction = function(roads, car, packages) {
   carLocation = c(car$x, car$y)
   if (car$load == 0) {
     # closestPackage = getClosestPackage(carLocation, packages)
     # packageLocation = c(closestPackage[1], closestPackage[2])
     # h = getManhattanDistance(carLocation, packageLocation)
     # if (h > 5) {
-      #closestPackage = getBestPackage(roads$hroads, roads$vroads, carLocation, packages)
+    #closestPackage = getBestPackage(roads$hroads, roads$vroads, carLocation, packages)
     closestPackage = getClosestPackage(carLocation, packages)
-      packageLocation = c(closestPackage[1], closestPackage[2])
-      nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
-      goTo = nodeData$node
-      #goTo = packageLocation
+    packageLocation = c(closestPackage[1], closestPackage[2])
+    nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
+    goTo = nodeData$node
+    #goTo = packageLocation
     # } else {
     #   nodeData = aStarSearch(roads$hroads, roads$vroads, packageLocation, carLocation)
     #   goTo = nodeData$node
