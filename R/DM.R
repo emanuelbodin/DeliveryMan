@@ -2,7 +2,8 @@
 # Emanuel Bodin
 # Emil Petersson
 
-# runDeliveryMan(carReady = aStarDM, dim = 10, turns = 2000, doPlot = T, pause = 0.1, del = 5, verbose = T)
+# runDeliveryMan(carReady = myFunction, dim = 10, turns = 2000, doPlot = T, pause = 0.1, del = 5, verbose = T)
+# testDM(myFunction, verbose = 0, returnVec = FALSE, n = 500, seed = 21,timeLimit = 250)
 
 #' getManhattanDistance
 #' 
@@ -118,13 +119,14 @@ aStarSearch = function(hroads, vroads, packageLocation, carLocation) {
         }
         nodeIndex = isInSet(nodes[[j]], openSet)
         parent = c(currentNode$x, currentNode$y)
+        g = g + currentNode$g
         # create new node
         newNode <- list(x=x, y=y, g=g, h=h, f=h+g, parent=parent)
         if (!nodeIndex) {
           # add new node to open set if it doesnt already exist there
           openSet[[length(openSet) + 1]] <- newNode
         }
-          else if (openSet[[nodeIndex]]$f < newNode$f) {
+          else if (openSet[[nodeIndex]]$f > newNode$f) {
             # updates the node in the open set if the new f cost is lower than the old one
             openSet[[nodeIndex]] <- newNode
           }
